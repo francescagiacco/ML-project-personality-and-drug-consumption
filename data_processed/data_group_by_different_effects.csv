@@ -1,4 +1,4 @@
-,age,education,n_score,e_score,o_score,a_score,c_score,impulsiveness,ss,asian,black_asian,white_asian,white_black,other,white,other2,autralia,canada,new_zeland,ireland,uk,usa,male,female,depressant,depressant_no_vino,stimulants,hallucinogens
+,age,education,n_score,e_score,o_score,a_score,c_score,impulsiveness,ss,asian,black_asian,white_asian,white_black,other,white,other2,australia,canada,new_zealand,ireland,uk,usa,male,female,depressant,depressant_no_wine,stimulants,hallucinogens
 0,0.49788,-0.05921,0.31287,-0.57545,-0.58331,-0.91699,-0.00665,-0.21712,-1.18084,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0.88,0.52,0.4,0.0
 1,-0.07854,1.98437,-0.67825,1.93886,1.43533,0.76096,-0.14277,-0.71126,-0.21575,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,1.08,0.6599999999999999,2.9999999999999996,1.68
 2,0.49788,-0.05921,-0.46725,0.80523,-0.84732,-1.6209,-1.0145,-1.37983,0.40148,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0.72,0.18,0.0,0.88
