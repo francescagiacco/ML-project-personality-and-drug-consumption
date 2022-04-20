@@ -1,4 +1,5 @@
 import pandas as pd
+import  sklearn
 
 def create_dictionary(column_data, d):
     '''input : data = column of pandas dataframe
@@ -29,7 +30,7 @@ def append_in_dataframe(data, dictionary):
     return new_data
 
 if __name__ == '__main__':
-    data = pd.read_csv('drug_consumption.csv')
+    data = pd.read_csv('..\drug_consumption.csv')
     d = {'asian' : -0.50212, 'black_asian' : 1.90725, 'white_asian' : 0.126001,
      'white_black' : -0.22166, 'other' : 0.11440, 'white' : -0.31685,
      'other2': -1.10702 }
@@ -42,3 +43,4 @@ if __name__ == '__main__':
     #remove the 'etnicity' column
     final_df = final_df.drop('etnicity', axis = 1).head()
     final_df.head()
+    print(final_df.head())
