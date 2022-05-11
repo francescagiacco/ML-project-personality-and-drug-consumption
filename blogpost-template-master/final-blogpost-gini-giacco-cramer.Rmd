@@ -17,7 +17,7 @@ creative_commons: CC BY
 repository_url: https://github.com/francescagiacco/ML-project-personality-and-drug-consumption
 output: 
   distill::distill_article: 
-    self_contained: false
+    self_contained: true
 preview: figures/BERTfig3.png
 #bibliography: bibliography.bib
 ---
