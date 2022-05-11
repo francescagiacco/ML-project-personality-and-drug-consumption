@@ -1,0 +1,110 @@
+---
+title: "Predicting Drug Consumption Through Personality"
+description: |
+  "We present a machine learning approach to predict the consumtion of five categories of drug using personality traits.")
+author: 
+  - name: Dominik Cramer
+    url: https://github.com/DominikCramer
+  - name: Francesca Giacco
+    url: https://github.com/francescagiacco
+  - name: Lorenzo Gini
+    url: https://github.com/zazzooo
+date: "`r Sys.Date()`" 
+categories: 
+  - Machine Learning
+  - Five Factor Model 
+creative_commons: CC BY
+repository_url: hhttps://github.com/francescagiacco/ML-project-personality-and-drug-consumption
+output: 
+  distill::distill_article: 
+    self_contained: false
+preview: figures/BERTfig3.png
+bibliography: bibliography.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Load dependencies 
+library(reticulate) # For rendering Python code 
+```
+
+## Abstract 
+This project aims to predict consumption of various groups of drugs through personality data. The underlying dataset contains data on the consumption of 18 legal and illegal substances, collected mainly in the US and the UK. The intuition behind this idea is that a certain type of personality might look for certain effects more than a specific drug.
+
+## Introduction / Background
+
+Every year, tens of thousands of deaths are caused by alcohol and drug abuse in the US and UK [3]. Naturally, governments conduct policies to reduce these numbers. However, in each of these countries such efforts carry a cost of 20 to 25 billion Euro to the taxpayers every year [2]. At the same time, drug policies appear to be rather expensive and ineffective in both countries. Drug treatment, even if targeted only at a small group, is relatively expensive due to the high cost per individual. Drug prevention on the other hand has a low cost per individual. However, since it needs to be targeted at the wider population, this advantage diminishes. Additionally, costs of drug prevention are more difficult to justify due to the prevention paradox. Being able to predict which individuals are more susceptible to which drugs would make them easier to justify while also allowing policy makers to cut expenses by targeting prevention measures only to those who need it.
+There are many features that need to be taken into account when predicting drug consumption. Personality traits are some of the most interesting ones because they are highly influential and out of reach of any policy. Indeed, there have been several studies linking personality traits to drug (ab)use (inter alia [7] [13]). What is new about this project is that not single drugs but categories of them according to their main effect are predicted.
+This project draws primarily on the paper of Fehrman et al. 2017 that investigated the relationship of personality traits and the drug consumption risk. Personality traits were measured with the five factor model ([11]) complemented by an impulsiveness score and a sensation-seeking score. As part of their study, Fehrman et al. collected the dataset on drug consumption in the United States and United Kingdom used for this project. The correlation between the different substances can be seen in Figure 1. [4].
+It is worth noting that even though several papers on the topic were published, there is no second comparable dataset publicly available.
+
+**See below for an example of how to cite related work in Markdown.**
+
+Bidirectional Encoder Representations from Transformers (BERT) have proven successful in prior attempts to classify phrases and short texts [@devlin2018bert].
+
+**Footnotes and Sidenotes**
+
+You can use footnotes ^[This is a footnote. You can view this by hovering over the footnote in text.] or sidenotes to elaborate on a concept throughout the paper. 
+
+<aside>
+This is a side note. 
+</aside>
+
+## Methodology
+
+The drugs were classified into five categories according to their primary effect (depressants, hallucinogens, stimulants, depressants without alcohol, and hallucinogens without cannabis). These categories are not mutually exclusive but instead used to account for different motives behind their consumption. The intuition behind adding the latter two categories excluding the most popular drugs was that in their case the much higher accessibility might make them less comparable. Using these categories increases the accuracy of our predictions compared to predicting single substances in accordance with our intuition (Fig.2 ).
+A threshold was defined for each drug which separates heavy users from the rest. We considered adding a distinction between non-users and users. However, since the aim is to carry out a policy-relevant project, these are not the important categories. Up to a certain level, consumption of drugs (including many illegal substances) is widely accepted and there are few to no efforts towards a total ban of drugs in western democracies. Therefore, we distinguished heavy users from the rest as this should become the target population of drug prevention policy. There is the obvious catch of having to find thresholds to distinguish between heavy users and the rest. Unfortunately, the used dataset for this project only contains data about within what amount of time a drug has been consumed recently. This left the authors with the only option to choose a certain threshold arbitrarily. It was selected drug-specifically based on the drug’s potential for addiction and overall physical and psychological harm. A column was added for every drug which contains 1 if the respective individual crosses the threshold and 0 otherwise.
+Finally, columns containing the predicted value were created. If an individual is classified as a heavy user of at least two drugs in one of the five categories they are considered a serious addict. If an individual is a heavy user in exactly one drug in one of the categories, they are considered an addict. If an individual is a heavy user of no drug in one of the categories, they are not considered an addict. This distinction was used in all the models predicting three classes. For the models predicting only two classes, the differentiation between serious addicts and addicts was omitted.
+Even with only two classes and especially with three, these classes were highly imbalanced (Fig.3, Fig.4). Since the dataset as a whole is rather small, we decided to address this imbalance generating synthetic data for the minority class using the Synthetic Minority Oversampling Technique (SMOTE). As our baseline model, we chose a k-neighbor classification with nine neighbors.
+We ran more than 100 different models. This is because every model was run for every one of the five drug categories as well as once predicting three classes and once predicting only two. Additionally, some models were built inclusing cross validation, thereby making the results more robust. This cross validation was executed with four splits and with five splits once for every model. Apart from the baseline model, logistic regression, XGBoost, decision tree, and random forest classifiers were deployed. Moreover, support vector machines (SVM) with different kernels were run (linear, polynomial, radial basis function, sigmoid function).
+
+**Below is an example of a figure:**
+
+```{r fig1, eval = TRUE, echo = FALSE, out.width = '100%', fig.cap = "Model architecture"}
+knitr::include_graphics("figures/BERTfig3.png")
+```
+
+## Experiments 
+
+**Data**: 
+
+The dataset contains demographic information including age, ethnicity, country, gender and educational level. Then, three indexes measuring personality data are included. These are an impulsiveness score, a sensation-seeking score (ss-score), and the five factor model. The latter measures personality according to five factors, namely Neuroticism (n-score), Extraversion (e-score), Openness to experience (o-score), Agreeableness (a-score) and Conscientiousness (c-score). These 7 indicators of personality are the predictors we are more interested in [12]. Finally, we have data on the last instance of consumption of several drugs. These take values ranging from 0 to 6, which correspond respectively to ”never used”, ”used over a decade ago”, ”used in the last decade”, ”used in the last year”, ”used in the last month”, ”used in the last week”, and ”used on the last day.”
+This dataset seems to be the only one publicly available containing data on personality traits and drug consumption. The data was collected via snowball sampling. This is not unusual in the area of research. More generally, when working with data on minorities that are difficult to reach and/or highly sensitive information, it is the sampling method of choice for many. Unfortunately, snowball sampling comes with several negative implications on data quality.
+Most importantly, observations are not random, meaning that many of the assumptions supporting conventional notions of random selection and representativeness do not hold. Inter alia, this is caused by community and self-selection bias. The result is an overly homogenous and biased sample. Also, drug consumption was measured as a dichotomous variable meaning that the quantity of the drugs consumed is unknown. The data was collected at one single point in time causing less reliable data on consumption further back in the past. Additionally, the time of last drug consumption was measured as a variable with arbitrarily chosen characteristics (last day, last week, last month, etc.) which decreases the precision especially at the boundaries between the categories. With just under 2,000 observations, the dataset is relatively small compared to other machine learning datasets. Nevertheless, snowball sampling is a useful and legitimate tool in the area of interest since some social systems are beyond researchers’ ability to recruit randomly. In the area of interest, it is even inevitable due to the illegality of consumption of some of the drugs in question. This also explains the size of the dataset.
+
+**Software**:
+For this project we mainly used python 3.14. The machine learning library is scikit-learn combined with seaborn, pandas, and matplotlib . The code runs mostly on jupyter notebook, except for a few scripts that are usually imported in the notebook and called from there. We set a pip environment to deal with the different versions of the libraries used. This method prevents possible conflicts that could arise in the pipe line. The Pipfile is available on the GitHub web page of the project.
+
+**Evaluation method**: 
+
+To account for both sensitivity and specificity and the persisting issue of imbalanced classes, the Matthews Correlation Coefficient (MCC) is best suited. Since personality traits cannot hold the complete predicting power regarding drug addiction, it would be concerning to see an MCC score very close to one. Moreover, the small size of the dataset does not allow for exhaustive training. Accordingly, we regard an MCC score above 0.5 as a satisfactory result (Fig. 5).
+
+**Experimental details**:
+
+The running time and the computational power needed were low. Although running the grid search took a little time, it was usually below 60 seconds. Only when it was necessary to tune the logistic regression to predict three classes for the category of depressants, the script took a running time of 155 seconds.
+
+**Results**:
+
+We identified the best models for each category of drug and tuned their parameters via grid search.
+For stimulants, these models are the random forest predicting two classes (MCC: 0.541) and the baseline model (MCC: 0.478). After the grid search, the former reached an MCC of 0.5732 while the latter scored 0.586. For hallucinogens, the logistic regression excluding race reached an MCC of 0.595 before the grid search and 0.627 afterwards. When excluding cannabis from this category, the two best performing models are the random forest (0.56) and the logistic regression excluding race (0.62). After tuning, the former scored an MCC of 0.578 and the latter reached 0.696. For depressants, the MCC of the logistic regression jumped from 0.515 to 0.558 after tuning. Removing alcohol from the depressant category creates a very different setup. The SVM and the random forest computed excluding race score the highest. Our grid search for the SVM consists of trying all the different kernels. The best MCC score is reached when the kernel used is ‘rbf’ (radial basis function). This model reaches a MCC of 0.654. The random forest scores 0.629.
+
+**Comment on quantitative results**:
+
+Our original idea was to produce a three classes model for each of our three categories (stimulants, depressants, hallucinogens) which then became five (addition of depressants without alcohol and hallucinogens without cannabis). Our intuition was that being able to distinguish between moderate and serious addiction would have been more insightful and possibly more useful for application in policy making. However, after running 60 different models with binary classification and 60 models with 3 classes, we realized that the two classes-models produced systematically better results. Indeed, by using the three-classes models, the MCC of our models drops by 0.17 on average. This result came with no surprise, as we were aware of the limited size of the dataset and that the number of people not consuming drugs always exceeded the number of “addicts”, leading to very imbalanced classes. For this reason, we only conducted the grid search and the final best-model selection on the binary classifiers.
+What was very interesting, is the performance of our models when excluding the two most popular drugs from their original category, namely alcohol and cannabis. We found that the predictions for depressants consumption were significantly more precise when excluding alcohol (MCC was 0.139 higher on average). By contrast, the predicting power of our models decreased slightly but systematically when excluding cannabis from the group of hallucinogens (MCC was 0.072 lower on average).
+
+## Analysis 
+
+As the logistic regression was always among the best models, we will use our best logistic regression for every category of drugs to interpret and compare our results.
+Stimulants: For stimulants our best model was a random forest but we achieved similar results for the logistic regres- sion, with a final MCC of 0.587. While tuning the parame- ters, l1 regularization achieved the best results. We find that some personality scores shrink to 0, as well as most of na- tionality data. We also find that the sensation seeking score (ss) has a strong predicting power (0.55), meaning that high ss leads to depressants consumption. The o-score is pos- itively affecting consumption (0.26) and c-score, namely consciousness is negatively affecting consumption (- 0.28). Age reduces depressants consumption ( - 0.71).
+Hallucinogens: When predicting hallucinogens con- sumption we select a Logistic Regression. The ss score has again a positive impact but lower than for stimulants (0.32). The o-score is positive (0.61) and higher than for the stim- ulants. Here, age and education have both negative impact on consumption (respectively - 0.62 and -0.36).
+Hallucinogens without cannabis: Even using a l1 reg- ularization, none of the personality traits get shrunk to 0,
+showing that personality has an impact on hallucinogens consumption. As before, the o-score and ss-score have the highest impact (0.56 and 0.44). An interesting finding when excluding cannabis is that the magnitude of the coefficient for age increases (-1.19). This means that the consump- tion of hallucinogens (ketamine, lsd, mushrooms) is mainly driven by young people.
+Depressants: Here personality traits seem to have con- flicting effects. o-score and ss-score continue having a pos- itive impact but this time with lower magnitude (0.38 and 0.25). This time however, a-score, namely agreeableness and e-score namely extraversion affect negatively consump- tion of depressants (respectively - 0.12 and -0.15). Age and education are again affecting negatively consumption but this time in a lighter way (-0.12, -0.12).
+Depressants without alcohol: Finally, by repeating the experiment without alcohol, we find that o-score and ss- score behave in the same direction as before (0.57 and 0.23). Here we can observe that remonig alcohol, the o- score has a stronger effect on depressants consumption. For the first time impulsiveness has a non-neglectable positive effect (0.13). Differently from above, the a-score becomes close to 0 while e-score remains stable (- 0.15). Age and education continue having a negative impact of depressants consumption (-0.30, -0.38).
+Evaluatioin: In general we see that when removing the most consumed drugs namely alcohol and cannabis, the co- efficients of age and education decrease (increased magni- tude of the negative impact). Moreover, we can see that the o-score and ss-score impact consumption positively for all types of drugs even if with different coefficients. Interest- ingly, e- score seems to only matter for depressants The a- score only affects depressants consumption when including alcohol, indicating that a high level of a-score might have a direct effect on alcohol consumption. Finally, impulsive- ness only has an impact on depressants consumption when excluding alcohol
+
+## Conclusion
+
+Personality traits have significant predicting power con- cerning drug consumption. Openness to new experiences and sensation-seeking are especially informative. Apart from that, age, gender and nationality have proven to hold high predictive power. Also, this project shows that predict- ing drug categories instead of single substances is beneficial and machine learning methods can be deployed to improve medical and psychological research. Unsurprisingly, the central limitations are found in the data itself. Datasets on drug consumption and possible predicting factors are urgently needed. They need to be larger and more diverse. Then the promising models deployed in this project could be refined up to a satisfactory level. For example, by training them on datasets focussing on nationals of the country conducting drug policy. Unfortunately, the problem is not just a lack of interest or funding in the scientific community. The current drug policies in most countries severely inhibit the collection of reliable and representative data. Apart from improvements in data quantity, quality, and the resulting model performance, more research that infers causality is needed to validate these models and shape an effective policy plan.
